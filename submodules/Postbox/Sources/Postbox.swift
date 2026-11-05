@@ -193,11 +193,6 @@ public final class Transaction {
         }
     }
     
-    public func messageIdsForGlobalIds(_ ids: [Int32]) -> [MessageId] {
-        assert(!self.disposed)
-        return self.postbox?.messageIdsForGlobalIds(ids) ?? []
-    }
-
     public func deleteMessagesWithGlobalIds(_ ids: [Int32], forEachMedia: ((Media) -> Void)?) {
         assert(!self.disposed)
         if let postbox = self.postbox {
