@@ -34,4 +34,5 @@ workflows:
           cd "$CM_BUILD_DIR/simulator-output/unpacked/Payload"
           ditto -c -k --sequesterRsrc --keepParent Telegram.app "$CM_BUILD_DIR/simulator-output/Satagram-Simulator.zip"
     artifacts:
+      - simulator-output/unpacked/Payload/Telegram.app
       - simulator-output/Satagram-Simulator.zip
