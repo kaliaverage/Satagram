@@ -1,0 +1,32 @@
+workflows:
+  satagram-simulator:
+    name: Satagram iOS Simulator
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      xcode: "27.1"
+    scripts:
+      - name: Prepare test signing
+        script: |
+          set -euo pipefail
+          python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
+          RUNNER_TEMP="$TMPDIR" python3 build-system/Make/RefreshVerificationProfiles.py
+      - name: Build for iOS Simulator
+        script: |
+          set -euo pipefail
+          python3 -u build-system/Make/Make.py build \
+            --configurationPath=build-system/appstore-configuration.json \
+            --codesigningInformationPath="$TMPDIR/satagram-test-signing" \
+            --configuration=debug_sim_arm64 \
+            --buildNumber="$BUILD_NUMBER"
+      - name: Package simulator app
+        script: |
+          set -euo pipefail
+          mkdir -p "$CM_BUILD_DIR/simulator-output/unpacked"
+          unzip -q bazel-bin/Telegram/Telegram.ipa -d "$CM_BUILD_DIR/simulator-output/unpacked"
+          app="$CM_BUILD_DIR/simulator-output/unpacked/Payload/Telegram.app"
+          test -d "$app"
+          cd "$CM_BUILD_DIR/simulator-output/unpacked/Payload"
+          ditto -c -k --sequesterRsrc --keepParent Telegram.app "$CM_BUILD_DIR/simulator-output/Satagram-Simulator.zip"
+    artifacts:
+      - simulator-output/Satagram-Simulator.zip
