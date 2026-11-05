@@ -43,11 +43,14 @@ jobs:
       - name: Import test signing identity
         run: python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
 
+      - name: Refresh test provisioning profiles
+        run: python3 build-system/Make/RefreshVerificationProfiles.py
+
       - name: Build device IPA
         run: |
           python3 -u build-system/Make/Make.py build \
             --configurationPath="$RUNNER_TEMP/satagram-config.json" \
-            --codesigningInformationPath=build-system/fake-codesigning \
+            --codesigningInformationPath="$RUNNER_TEMP/satagram-test-signing" \
             --configuration=release_arm64 \
             --buildNumber="$GITHUB_RUN_NUMBER"
           cp bazel-bin/Telegram/Telegram.ipa "$RUNNER_TEMP/Satagram.ipa"
