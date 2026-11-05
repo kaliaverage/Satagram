@@ -1,0 +1,24 @@
+name: Check Satagram compilation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: xcode-27
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Compile for the simulator
+        run: |
+          python3 -u build-system/Make/Make.py build \
+            --configurationPath=build-system/appstore-configuration.json \
+            --codesigningInformationPath=build-system/fake-codesigning \
+            --configuration=debug_sim_arm64 \
+            --buildNumber="$GITHUB_RUN_NUMBER"
