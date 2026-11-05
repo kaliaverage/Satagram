@@ -108,7 +108,7 @@ private enum SatagramSettingsEntry: ItemListNodeEntry {
         case let .provider(provider, selected):
             return ItemListCheckboxItem(presentationData: presentationData, systemStyle: .glass, title: provider.rawValue, style: .left, checked: selected, zeroSeparatorInsets: false, sectionId: self.section, action: { arguments.selectProvider(provider) })
         case let .apiKey(value, placeholder):
-            return ItemListSingleLineInputItem(presentationData: presentationData, systemStyle: .glass, title: NSAttributedString(), text: value, placeholder: placeholder, type: .password, sectionId: self.section, textUpdated: arguments.updateAPIKey)
+            return ItemListSingleLineInputItem(presentationData: presentationData, systemStyle: .glass, title: NSAttributedString(), text: value, placeholder: placeholder, type: .password, sectionId: self.section, textUpdated: arguments.updateAPIKey, action: {})
         case let .archiveLink(title):
             return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: "", sectionId: self.section, style: .blocks, action: arguments.openArchive)
         }
