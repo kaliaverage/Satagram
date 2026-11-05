@@ -9,6 +9,7 @@ workflows:
       - name: Prepare test signing
         script: |
           set -euo pipefail
+          xcodebuild -downloadComponent MetalToolchain
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
           RUNNER_TEMP="$TMPDIR" python3 build-system/Make/RefreshVerificationProfiles.py
       - name: Build for iOS Simulator
