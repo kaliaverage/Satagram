@@ -99,6 +99,8 @@ extension PeerInfoScreenNode {
             if let settings = self.data?.globalSettings {
                 push(notificationsAndSoundsController(context: self.context, exceptionsList: settings.notificationExceptions))
             }
+        case .satagram:
+            push(satagramSettingsController(context: self.context))
         case .privacyAndSecurity:
             if let settings = self.data?.globalSettings {
                 let _ = (combineLatest(self.blockedPeers.get(), self.hasTwoStepAuth.get())

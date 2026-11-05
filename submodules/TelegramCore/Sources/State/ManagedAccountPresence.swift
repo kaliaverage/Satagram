@@ -17,6 +17,8 @@ private final class AccountPresenceManagerImpl {
     private var onlineTimer: SignalKitTimer?
     
     private var wasOnline: Bool = false
+    private var wantsOnline: Bool = false
+    private var ghostModeObserver: NSObjectProtocol?
     
     init(queue: Queue, shouldKeepOnlinePresence: Signal<Bool, NoError>, network: Network) {
         self.queue = queue
@@ -28,20 +30,44 @@ private final class AccountPresenceManagerImpl {
             guard let `self` = self else {
                 return
             }
-            if self.wasOnline != value {
-                self.wasOnline = value
-                self.updatePresence(value)
-            }
+            self.wantsOnline = value
+            self.applyPresence()
         })
+        self.ghostModeObserver = NotificationCenter.default.addObserver(forName: Notification.Name("SatagramGhostModeChanged"), object: nil, queue: nil) { [weak self] _ in
+            guard let self else { return }
+            self.queue.async { [weak self] in
+                guard let self else { return }
+                if UserDefaults.standard.bool(forKey: "SatagramGhostMode") {
+                    self.wasOnline = false
+                    self.updatePresence(false)
+                } else {
+                    self.applyPresence()
+                }
+            }
+        }
+        if UserDefaults.standard.bool(forKey: "SatagramGhostMode") {
+            self.updatePresence(false)
+        }
     }
     
     deinit {
         assert(self.queue.isCurrent())
+        if let observer = self.ghostModeObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
         self.shouldKeepOnlinePresenceDisposable?.dispose()
         self.currentRequestDisposable.dispose()
         self.onlineTimer?.invalidate()
     }
     
+    private func applyPresence() {
+        let isOnline = self.wantsOnline && !UserDefaults.standard.bool(forKey: "SatagramGhostMode")
+        if self.wasOnline != isOnline {
+            self.wasOnline = isOnline
+            self.updatePresence(isOnline)
+        }
+    }
+
     private func updatePresence(_ isOnline: Bool) {
         let request: Signal<Api.Bool, MTRpcError>
         if isOnline {

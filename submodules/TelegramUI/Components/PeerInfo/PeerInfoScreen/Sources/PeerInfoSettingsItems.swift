@@ -259,6 +259,9 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
     items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 1, text: presentationData.strings.Settings_PrivacySettings, icon: PresentationResourcesSettings.security, action: {
         interaction.openSettings(.privacyAndSecurity)
     }))
+    items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 7, text: "Satagram", icon: PresentationResourcesSettings.appearance, action: {
+        interaction.openSettings(.satagram)
+    }))
     items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 2, text: presentationData.strings.Settings_ChatSettings, icon: PresentationResourcesSettings.dataAndStorage, action: {
         interaction.openSettings(.dataAndStorage)
     }))
