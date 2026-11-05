@@ -10,6 +10,10 @@ workflows:
         script: |
           set -euo pipefail
           xcodebuild -downloadComponent MetalToolchain
+          if [ -x /opt/homebrew/bin/ccache ] && [ ! -x /usr/local/bin/ccache ]; then
+            sudo mkdir -p /usr/local/bin
+            sudo ln -sf /opt/homebrew/bin/ccache /usr/local/bin/ccache
+          fi
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
           RUNNER_TEMP="$TMPDIR" python3 build-system/Make/RefreshVerificationProfiles.py
       - name: Build for iOS Simulator
